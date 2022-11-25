@@ -12,10 +12,11 @@ class ResNet18(chainer.Chain):
         )
     
     def __call__(self, x):
-        h = [self.aud(True, chainer.Variable(chainer.cuda.to_gpu(x[0]), True)), chainer.functions.expand_dims(chainer.functions.sum(self.vis(True, chainer.Variable(chainer.cuda.to_gpu(x[1][:256]), True)), 0), 0)]
+        h = [self.aud(True, chainer.Variable(x[0])),
+         chainer.functions.expand_dims(chainer.functions.sum(self.vis(True, chainer.Variable(x[1][:256])), 0), 0)]
         
-        for i in xrange(256, x[1].shape[0], 256):
-            h[1] += chainer.functions.expand_dims(chainer.functions.sum(self.vis(True, chainer.Variable(chainer.cuda.to_gpu(x[1][i : i + 256]), True)), 0), 0)
+        for i in range(256, x[1].shape[0], 256):
+            h[1] += chainer.functions.expand_dims(chainer.functions.sum(self.vis(True, chainer.Variable(x[1][i : i + 256])), 0), 0)
         
         h[1] /= x[1].shape[0]
         
